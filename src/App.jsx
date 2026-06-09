@@ -10,6 +10,7 @@ import Companies from "./user/pages/Companies";
 import Leads from "./user/pages/Leads";
 
 import CompanyFiltersDashboard from "./admin/pages/CompanyFiltersDashboard";
+import CompanyUniqueFiltersDashboard from "./admin/pages/CompanyUniqueFiltersDashboard";
 
 function App() {
   return (
@@ -28,6 +29,10 @@ function App() {
         <Route
           path="/admin/company-filters"
           element={<CompanyFiltersDashboard />}
+        />
+        <Route
+          path="/admin/company-unique-filters"
+          element={<CompanyUniqueFiltersDashboard />}
         />
         <Route
           path="/admin"
