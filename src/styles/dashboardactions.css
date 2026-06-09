@@ -1,0 +1,15 @@
+.grid-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.left-actions,
+.right-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
