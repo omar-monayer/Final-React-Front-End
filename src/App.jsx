@@ -16,6 +16,13 @@ import IndustryDashboard from "./admin/pages/IndustryDashboard";
 import SizeDashboard from "./admin/pages/SizeDashboard";
 import JobTitlesDashboard from "./admin/pages/JobTitlesDashboard";
 
+import AddCompanyFilters from "./admin/pages/AddCompanyFilters";
+import AddCompanyUniqueFilter from "./admin/pages/AddCompanyUniqueFilter";
+import AddLocation from "./admin/pages/AddLocation";
+import AddIndustry from "./admin/pages/AddIndustry";
+import AddSize from "./admin/pages/AddSize";
+import AddJobTitle from "./admin/pages/AddJobTitle";
+
 function App() {
   return (
     <Routes>
@@ -53,6 +60,30 @@ function App() {
         <Route
             path="/admin/job-titles"
             element={<JobTitlesDashboard />}
+          />
+          <Route
+            path="/admin/company-filters/add"
+            element={<AddCompanyFilters />}
+          />
+        <Route
+            path="/admin/company-unique-filters/add"
+            element={<AddCompanyUniqueFilter />}
+          />
+        <Route
+            path="/admin/location/add"
+            element={<AddLocation />}
+          />
+          <Route
+            path="/admin/industry/add"
+            element={<AddIndustry />}
+          />
+          <Route
+            path="/admin/size/add"
+            element={<AddSize />}
+          />
+          <Route
+            path="/admin/job-titles/add"
+            element={<AddJobTitle />}
           />
         <Route
           path="/admin"
