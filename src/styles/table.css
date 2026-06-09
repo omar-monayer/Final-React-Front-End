@@ -1,0 +1,85 @@
+.grid-wrapper {
+  width: 100%;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.grid {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.grid th,
+.grid td {
+  padding: 10px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  vertical-align: top;
+}
+
+.grid-header {
+  background: linear-gradient(90deg, #0e223d, #123055);
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.grid-alt {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.grid tr:hover td {
+  background: rgba(0, 174, 255, 0.05);
+}
+
+.expandable-cell {
+  max-width: 280px;
+  white-space: normal !important;
+  line-height: 1.5;
+}
+
+.expandable-cell a {
+  color: #7edcff;
+  text-decoration: none;
+}
+
+.expandable-cell a:hover {
+  text-decoration: underline;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 6px;
+  color: #00d9ff;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
+
+.hidden {
+  display: none;
+}
+
+.select-form {
+  margin: 0;
+}
