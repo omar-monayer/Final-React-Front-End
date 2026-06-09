@@ -2,11 +2,14 @@ import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import PagePanel from "./components/PagePanel";
 import DashboardActions from "./components/DashboardActions";
+import DashboardTable from "./components/DashboardTable";
+import { companies } from "./data/companies";
 
 function Home() {
   return (
     <PagePanel title="Dashboard">
       <DashboardActions />
+      <DashboardTable companies={companies} />
     </PagePanel>
   );
 }
