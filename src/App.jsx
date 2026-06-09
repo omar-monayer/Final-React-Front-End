@@ -13,6 +13,9 @@ import CompaniesTable from "./components/CompaniesTable";
 import { companiesPageData } from "./data/companiesPageData";
 import EmailPreviewModal from "./components/EmailPreviewModal";
 import LeadsFilterModal from "./components/LeadsFilterModal";
+import { leadsData } from "./data/leadsData";
+import LeadsActions from "./components/LeadsActions";
+import LeadsTable from "./components/LeadsTable";
 
 function Home() {
   return (
@@ -66,47 +69,38 @@ function Companies() {
 }
 
 function Leads() {
+  const [searchValue, setSearchValue] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState(null);
   const [filters, setFilters] = useState({
     jobTitle: "",
   });
 
-  function handleApplyFilters(selectedFilters) {
-    setFilters(selectedFilters);
-    console.log(selectedFilters);
+  function handleExport() {
+    alert("Export to Excel clicked for Leads.xlsx");
   }
-  const [selectedEmail, setSelectedEmail] = useState(null);
-
-  const testEmail = {
-    subject: "Follow up regarding partnership",
-    lastContacted: "2026-04-18",
-    body: `
-      <html>
-        <body style="font-family:Arial,sans-serif;padding:20px;">
-          <h2>Hello Omar,</h2>
-          <p>I wanted to follow up regarding our partnership opportunity and discuss next steps.</p>
-          <p>Best regards,<br>NEXSUS Team</p>
-        </body>
-      </html>
-    `,
-  };
 
   return (
     <PagePanel title="Leads">
-       <ActionButton onClick={() => setIsFilterOpen(true)}>
-        Filter
-      </ActionButton>
+      <LeadsActions
+        searchValue={searchValue}
+        onSearchChange={(e) => setSearchValue(e.target.value)}
+        onFilterClick={() => setIsFilterOpen(true)}
+        onExportClick={handleExport}
+      />
 
-      <p>Selected Job Title: {filters.jobTitle || "All"}</p>
+      <LeadsTable
+        leads={leadsData}
+        searchValue={searchValue}
+        filters={filters}
+        onViewEmail={setSelectedEmail}
+      />
 
       <LeadsFilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        onApply={handleApplyFilters}
+        onApply={(selectedFilters) => setFilters(selectedFilters)}
       />
-      <ActionButton onClick={() => setSelectedEmail(testEmail)}>
-        View
-      </ActionButton>
 
       <EmailPreviewModal
         isOpen={selectedEmail !== null}
@@ -116,6 +110,8 @@ function Leads() {
     </PagePanel>
   );
 }
+
+
 
 
 function App() {

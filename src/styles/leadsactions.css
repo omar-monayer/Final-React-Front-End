@@ -1,0 +1,26 @@
+.leads-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.leads-left-actions,
+.leads-right-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.leads-search-input {
+  min-width: 260px;
+}
+
+@media screen and (max-width: 768px) {
+  .leads-search-input {
+    min-width: 100%;
+  }
+}

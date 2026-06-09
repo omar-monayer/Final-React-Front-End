@@ -1,0 +1,7 @@
+.leads-grid .expandable-cell {
+  max-width: 220px;
+}
+
+.leads-grid .expandable-cell a {
+  word-break: break-word;
+}
