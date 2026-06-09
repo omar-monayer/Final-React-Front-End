@@ -13,6 +13,7 @@ import CompanyFiltersDashboard from "./admin/pages/CompanyFiltersDashboard";
 import CompanyUniqueFiltersDashboard from "./admin/pages/CompanyUniqueFiltersDashboard";
 import LocationDashboard from "./admin/pages/LocationDashboard";
 import IndustryDashboard from "./admin/pages/IndustryDashboard";
+import SizeDashboard from "./admin/pages/SizeDashboard";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
           <Route
             path="/admin/industry"
             element={<IndustryDashboard />}
+          />
+          <Route
+            path="/admin/size"
+            element={<SizeDashboard />}
           />
         <Route
           path="/admin"
