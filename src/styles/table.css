@@ -83,3 +83,9 @@
 .select-form {
   margin: 0;
 }
+
+.empty-row {
+  text-align: center !important;
+  padding: 20px !important;
+  color: #9fb2d1;
+}
