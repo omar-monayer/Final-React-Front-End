@@ -6,6 +6,7 @@ import ActionButton from "./components/ActionButton";
 import DashboardActions from "./components/DashboardActions";
 import DashboardTable from "./components/DashboardTable";
 import { companies } from "./data/companies";
+import CompaniesActions from "./components/CompaniesActions";
 import SearchInput from "./components/SearchInput";
 import FilterModal from "./components/FilterModal";
 
@@ -19,26 +20,33 @@ function Home() {
 }
 
 function Companies() {
-  const [searchText, setSearchText] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  function handleExport() {
+    alert("Export to Excel clicked for Companies.xlsx");
+  }
+
+  function handleApplyFilters(filters) {
+    console.log(filters);
+  }
 
   return (
     <PagePanel title="Companies">
-      <ActionButton onClick={() => setIsFilterOpen(true)}>
-        Filter
-      </ActionButton>
+      <CompaniesActions
+        searchValue={searchValue}
+        onSearchChange={(e) => setSearchValue(e.target.value)}
+        onFilterClick={() => setIsFilterOpen(true)}
+        onExportClick={handleExport}
+      />
+
+      <p>Search value: {searchValue}</p>
+
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        onApply={(filters) => console.log(filters)}
+        onApply={handleApplyFilters}
       />
-      <SearchInput
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder="Search Company..."
-      />
-
-      <p>Search value: {searchText}</p>
     </PagePanel>
   );
 }
