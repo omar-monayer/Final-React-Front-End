@@ -1,20 +1,37 @@
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
+import PagePanel from "./components/Pagepanel";
 
 function Home() {
-  return <h1>Home Page</h1>;
+  return (
+    <PagePanel title="Dashboard">
+      <p>Dashboard content will go here.</p>
+    </PagePanel>
+  );
 }
 
 function Companies() {
-  return <h1>Companies Page</h1>;
+  return (
+    <PagePanel title="Companies">
+      <p>Companies content will go here.</p>
+    </PagePanel>
+  );
 }
 
 function Leads() {
-  return <h1>Leads Page</h1>;
+  return (
+    <PagePanel title="Leads">
+      <p>Leads content will go here.</p>
+    </PagePanel>
+  );
 }
 
 function NotFound() {
-  return <h1>Page Not Found</h1>;
+  return (
+    <PagePanel title="Page Not Found">
+      <p>This page does not exist.</p>
+    </PagePanel>
+  );
 }
 
 function App() {
