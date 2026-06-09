@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import PagePanel from "./components/PagePanel";
 import DashboardActions from "./components/DashboardActions";
 import DashboardTable from "./components/DashboardTable";
 import { companies } from "./data/companies";
+import SearchInput from "./components/SearchInput";
 
 function Home() {
   return (
@@ -15,9 +17,17 @@ function Home() {
 }
 
 function Companies() {
+  const [searchText, setSearchText] = useState("");
+
   return (
     <PagePanel title="Companies">
-      <p>Companies content will go here.</p>
+      <SearchInput
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        placeholder="Search Company..."
+      />
+
+      <p>Search value: {searchText}</p>
     </PagePanel>
   );
 }
