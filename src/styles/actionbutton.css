@@ -1,0 +1,24 @@
+.action-btn {
+  padding: 8px 14px;
+  background: linear-gradient(90deg, #00aaff, #00e0b8);
+  border: none;
+  color: #04111f;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.25s ease;
+  display: inline-block;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 224, 184, 0.2);
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
