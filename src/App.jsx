@@ -10,8 +10,8 @@ import CompaniesActions from "./components/CompaniesActions";
 import SearchInput from "./components/SearchInput";
 import FilterModal from "./components/FilterModal";
 import CompaniesTable from "./components/CompaniesTable";
-
 import { companiesPageData } from "./data/companiesPageData";
+import EmailPreviewModal from "./components/EmailPreviewModal";
 
 function Home() {
   return (
@@ -65,9 +65,33 @@ function Companies() {
 }
 
 function Leads() {
+  const [selectedEmail, setSelectedEmail] = useState(null);
+
+  const testEmail = {
+    subject: "Follow up regarding partnership",
+    lastContacted: "2026-04-18",
+    body: `
+      <html>
+        <body style="font-family:Arial,sans-serif;padding:20px;">
+          <h2>Hello Omar,</h2>
+          <p>I wanted to follow up regarding our partnership opportunity and discuss next steps.</p>
+          <p>Best regards,<br>NEXSUS Team</p>
+        </body>
+      </html>
+    `,
+  };
+
   return (
     <PagePanel title="Leads">
-      <p>Leads content will go here.</p>
+      <ActionButton onClick={() => setSelectedEmail(testEmail)}>
+        View
+      </ActionButton>
+
+      <EmailPreviewModal
+        isOpen={selectedEmail !== null}
+        email={selectedEmail}
+        onClose={() => setSelectedEmail(null)}
+      />
     </PagePanel>
   );
 }
