@@ -1,0 +1,85 @@
+.filter-modal {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+}
+
+.filter-modal-content {
+  width: 620px;
+  max-width: calc(100vw - 30px);
+  background: #0f1b2d;
+  margin: 80px auto;
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.filter-modal-content h3 {
+  margin-top: 0;
+  color: white;
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  color: #cfe5ff;
+  font-size: 28px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.close:hover {
+  color: white;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filter-item label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #9fb2d1;
+}
+
+.filter-item select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.filter-item select option {
+  background: #0f1b2d;
+  color: #ffffff;
+}
+
+.filter-item select:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.08);
+}
+
+.filter-message {
+  color: #ff9fb7;
+  margin-bottom: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+}
