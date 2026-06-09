@@ -9,6 +9,9 @@ import { companies } from "./data/companies";
 import CompaniesActions from "./components/CompaniesActions";
 import SearchInput from "./components/SearchInput";
 import FilterModal from "./components/FilterModal";
+import CompaniesTable from "./components/CompaniesTable";
+
+import { companiesPageData } from "./data/companiesPageData";
 
 function Home() {
   return (
@@ -22,13 +25,19 @@ function Home() {
 function Companies() {
   const [searchValue, setSearchValue] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    country: "",
+    state: "",
+    industry: "",
+    size: "",
+  });
 
   function handleExport() {
     alert("Export to Excel clicked for Companies.xlsx");
   }
 
-  function handleApplyFilters(filters) {
-    console.log(filters);
+  function handleApplyFilters(selectedFilters) {
+    setFilters(selectedFilters);
   }
 
   return (
@@ -40,7 +49,11 @@ function Companies() {
         onExportClick={handleExport}
       />
 
-      <p>Search value: {searchValue}</p>
+      <CompaniesTable
+        companies={companiesPageData}
+        searchValue={searchValue}
+        filters={filters}
+      />
 
       <FilterModal
         isOpen={isFilterOpen}
