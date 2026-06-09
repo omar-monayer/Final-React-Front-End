@@ -11,6 +11,7 @@ import Leads from "./user/pages/Leads";
 
 import CompanyFiltersDashboard from "./admin/pages/CompanyFiltersDashboard";
 import CompanyUniqueFiltersDashboard from "./admin/pages/CompanyUniqueFiltersDashboard";
+import LocationDashboard from "./admin/pages/LocationDashboard";
 
 function App() {
   return (
@@ -34,6 +35,10 @@ function App() {
           path="/admin/company-unique-filters"
           element={<CompanyUniqueFiltersDashboard />}
         />
+         <Route
+            path="/admin/location"
+            element={<LocationDashboard />}
+          />
         <Route
           path="/admin"
           element={<Navigate to="/admin/company-filters" replace />}
