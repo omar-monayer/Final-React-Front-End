@@ -1,11 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import PagePanel from "./components/Pagepanel";
+import PagePanel from "./components/PagePanel";
+import ActionButton from "./components/ActionButton";
+import "./styles/actionbutton.css";
 
 function Home() {
   return (
     <PagePanel title="Dashboard">
-      <p>Dashboard content will go here.</p>
+      <div className="button-group">
+        <ActionButton>Analytics</ActionButton>
+        <ActionButton>Export to Excel</ActionButton>
+        <ActionButton>Select</ActionButton>
+      </div>
     </PagePanel>
   );
 }
@@ -26,14 +32,6 @@ function Leads() {
   );
 }
 
-function NotFound() {
-  return (
-    <PagePanel title="Page Not Found">
-      <p>This page does not exist.</p>
-    </PagePanel>
-  );
-}
-
 function App() {
   return (
     <>
@@ -44,7 +42,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/companies" element={<Companies />} />
           <Route path="/leads" element={<Leads />} />
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </>
