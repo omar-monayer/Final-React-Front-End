@@ -12,6 +12,7 @@ import FilterModal from "./components/FilterModal";
 import CompaniesTable from "./components/CompaniesTable";
 import { companiesPageData } from "./data/companiesPageData";
 import EmailPreviewModal from "./components/EmailPreviewModal";
+import LeadsFilterModal from "./components/LeadsFilterModal";
 
 function Home() {
   return (
@@ -65,6 +66,15 @@ function Companies() {
 }
 
 function Leads() {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    jobTitle: "",
+  });
+
+  function handleApplyFilters(selectedFilters) {
+    setFilters(selectedFilters);
+    console.log(selectedFilters);
+  }
   const [selectedEmail, setSelectedEmail] = useState(null);
 
   const testEmail = {
@@ -83,6 +93,17 @@ function Leads() {
 
   return (
     <PagePanel title="Leads">
+       <ActionButton onClick={() => setIsFilterOpen(true)}>
+        Filter
+      </ActionButton>
+
+      <p>Selected Job Title: {filters.jobTitle || "All"}</p>
+
+      <LeadsFilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApply={handleApplyFilters}
+      />
       <ActionButton onClick={() => setSelectedEmail(testEmail)}>
         View
       </ActionButton>
@@ -95,6 +116,7 @@ function Leads() {
     </PagePanel>
   );
 }
+
 
 function App() {
   return (
