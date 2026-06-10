@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
-import "../../styles/adminforms.css";
+import "../styles/adminforms.css";
 
 function AddSize() {
   const [formData, setFormData] = useState({
