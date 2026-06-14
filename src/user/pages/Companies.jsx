@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+
 import PagePanel from "../components/PagePanel";
 import CompaniesActions from "../components/CompaniesActions";
 import CompaniesTable from "../components/CompaniesTable";
-import FilterModal from "../components/FilterModal";
-import { companiesPageData } from "../data/companiesPageData";
+import { getLoggedUser } from "../../auth/authService";
 
 function Companies() {
+  const [searchParams] = useSearchParams();
+
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+
   const [searchValue, setSearchValue] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState({
     country: "",
     state: "",
@@ -15,30 +21,75 @@ function Companies() {
     size: "",
   });
 
+  const coflId = searchParams.get("coflId");
+
+  useEffect(() => {
+    async function loadCompanies() {
+      try {
+        setLoading(true);
+        setMessage("");
+
+        const user = getLoggedUser();
+
+        if (!user || !user.email) {
+          setMessage("No logged-in user found.");
+          setCompanies([]);
+          return;
+        }
+
+        let url = `http://localhost:3000/api/user/companies?email=${encodeURIComponent(
+          user.email
+        )}`;
+
+        if (coflId) {
+          url += `&coflId=${encodeURIComponent(coflId)}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok) {
+          setMessage(data.message || "Failed to load companies.");
+          setCompanies([]);
+          return;
+        }
+
+        setCompanies(data);
+      } catch (error) {
+        setMessage(error.message);
+        setCompanies([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCompanies();
+  }, [coflId]);
+  
   function handleExport() {
-    alert("Export to Excel clicked for Companies.xlsx");
+    alert("Export to Excel clicked for Leads.xlsx");
   }
 
+
   return (
-    <PagePanel title="Companies">
+    <PagePanel title={coflId ? "Selected Companies" : "Companies"}>
       <CompaniesActions
         searchValue={searchValue}
-        onSearchChange={(e) => setSearchValue(e.target.value)}
-        onFilterClick={() => setIsFilterOpen(true)}
+        setSearchValue={setSearchValue}
         onExportClick={handleExport}
       />
 
-      <CompaniesTable
-        companies={companiesPageData}
-        searchValue={searchValue}
-        filters={filters}
-      />
+      {message && <p>{message}</p>}
 
-      <FilterModal
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        onApply={(selectedFilters) => setFilters(selectedFilters)}
-      />
+      {loading ? (
+        <p>Loading companies...</p>
+      ) : (
+        <CompaniesTable
+          companies={companies}
+          searchValue={searchValue}
+          filters={filters}
+        />
+      )}
     </PagePanel>
   );
 }

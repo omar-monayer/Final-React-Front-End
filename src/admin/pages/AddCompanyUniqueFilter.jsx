@@ -1,175 +1,251 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
 
-const locationOptions = ["Amman", "Dubai", "Riyadh"];
-const industryOptions = ["Technology", "Healthcare", "Construction"];
-const sizeOptions = ["1-10", "11-50", "51-200"];
+function AddCompanyUniqueFilters() {
+  const navigate = useNavigate();
 
-function AddCompanyUniqueFilter() {
+  const [locations, setLocations] = useState([]);
+  const [industries, setIndustries] = useState([]);
+  const [sizes, setSizes] = useState([]);
+
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+
   const [formData, setFormData] = useState({
-    location: "",
-    industry: "",
-    size: "",
+    locationId: "",
+    industryId: "",
+    sizeId: "",
+    pages: "",
+    extracted: "",
+    leads: "",
+    active: true,
+    done: false,
   });
 
-  const [activePopup, setActivePopup] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [message, setMessage] = useState("");
+  useEffect(() => {
+  async function loadFormOptions() {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/company-unique-filters/form-options"
+      );
 
-  function openPopup(popupName) {
-    setActivePopup(popupName);
-    setSearchText("");
-  }
+      if (!response.ok) {
+        throw new Error("Failed to load dropdown options");
+      }
 
-  function closePopup() {
-    setActivePopup(null);
-    setSearchText("");
-  }
+      const data = await response.json();
 
-  function selectValue(fieldName, value) {
-    setFormData((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
-  }
+      console.log("Form options:", data);
 
-  function handleSizeChange(event) {
-    setFormData((prev) => ({
-      ...prev,
-      size: event.target.value,
-    }));
-  }
-
-  function handleAdd() {
-    if (!formData.location || !formData.industry || !formData.size) {
-      setMessage("Please fill all fields.");
-      return;
+      setLocations(data.locations || []);
+      setIndustries(data.industries || []);
+      setSizes(data.sizes || []);
+    } catch (error) {
+      setMessage(error.message);
     }
-
-    setMessage("Company unique filter added successfully.");
-    console.log(formData);
   }
 
-  const currentOptions =
-    activePopup === "location" ? locationOptions : industryOptions;
+  loadFormOptions();
+}, []);
 
-  const filteredOptions = currentOptions.filter((item) =>
-    item.toLowerCase().includes(searchText.toLowerCase())
-  );
+  function handleChange(e) {
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+
+  async function handleAdd(e) {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      setMessage("Saving company unique filter...");
+
+      const response = await fetch(
+        "http://localhost:3000/api/company-unique-filters",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add company unique filter");
+      }
+
+      setMessage("Company unique filter added successfully.");
+      navigate("/admin/company-unique-filters");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <AdminLayout>
       <div className="admin-form-page">
-        <Link to="/admin/company-unique-filters" className="admin-back-btn">
-          Back
-        </Link>
+        <div className="admin-form-card">
+          <div className="admin-form-header">
+            <h2>Add Company Unique Filter</h2>
+          </div>
 
-        <div className="admin-form-card admin-simple-form">
-          <h2>Filter Unique Companies</h2>
+          {message && <p>{message}</p>}
 
-          <div className="admin-form-grid">
-            <div className="admin-field-group admin-full-width">
-              <label>Location</label>
-              <input
+          <form onSubmit={handleAdd}>
+            <div className="admin-form-grid">
+              <div className="admin-field-group">
+                <label>Location</label>
+               <select
+                name="locationId"
                 className="admin-input"
-                type="text"
-                placeholder="Select Location"
-                value={formData.location}
-                readOnly
-                onClick={() => openPopup("location")}
-              />
-            </div>
-
-            <div className="admin-field-group admin-full-width">
-              <label>Industry</label>
-              <input
-                className="admin-input"
-                type="text"
-                placeholder="Select Industry"
-                value={formData.industry}
-                readOnly
-                onClick={() => openPopup("industry")}
-              />
-            </div>
-
-            <div className="admin-field-group admin-full-width">
-              <label>Size</label>
-              <select
-                className="admin-select"
-                value={formData.size}
-                onChange={handleSizeChange}
+                value={formData.locationId}
+                onChange={handleChange}
+                required
               >
-                <option value="">-- Select Size --</option>
-                {sizeOptions.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
+                <option value="">Select location</option>
+
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
                   </option>
                 ))}
               </select>
-            </div>
-          </div>
+              </div>
 
-          <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
-            </button>
-
-            {message && <span className="admin-message-label">{message}</span>}
-          </div>
-        </div>
-
-        {activePopup && (
-          <>
-            <div className="admin-popup-overlay" onClick={closePopup}></div>
-
-            <div className="admin-popup-panel">
-              <h3>
-                Select {activePopup === "location" ? "Location" : "Industry"}
-              </h3>
-
-              <input
-                type="text"
-                className="admin-popup-search"
-                placeholder="Search..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-
-              <select
-                className="admin-popup-select"
-                value={
-                  activePopup === "location"
-                    ? formData.location
-                    : formData.industry
-                }
-                onChange={(e) =>
-                  selectValue(activePopup, e.target.value)
-                }
+              <div className="admin-field-group">
+                <label>Industry</label>
+                <select
+                name="industryId"
+                className="admin-input"
+                value={formData.industryId}
+                onChange={handleChange}
+                required
               >
-                {filteredOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
+                <option value="">Select industry</option>
+
+                {industries.map((industry) => (
+                  <option key={industry.id} value={industry.id}>
+                    {industry.name}
                   </option>
                 ))}
               </select>
+              </div>
 
-              <div className="admin-popup-actions">
-                <button
-                  className="admin-form-btn"
-                  type="button"
-                  onClick={closePopup}
-                >
-                  Close
-                </button>
+              <div className="admin-field-group">
+                <label>Size</label>
+               <select
+                name="sizeId"
+                className="admin-input"
+                value={formData.sizeId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select size</option>
+
+                {sizes.map((size) => (
+                  <option key={size.id} value={size.id}>
+                    {size.name}
+                  </option>
+                ))}
+              </select>
+              </div>
+
+              <div className="admin-field-group">
+                <label>Pages</label>
+                <input
+                  name="pages"
+                  className="admin-input"
+                  type="number"
+                  value={formData.pages}
+                  onChange={handleChange}
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="admin-field-group">
+                <label>Extracted Leads</label>
+                <input
+                  name="extracted"
+                  className="admin-input"
+                  type="number"
+                  value={formData.extracted}
+                  onChange={handleChange}
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="admin-field-group">
+                <label>Leads per Month</label>
+                <input
+                  name="leads"
+                  className="admin-input"
+                  type="number"
+                  value={formData.leads}
+                  onChange={handleChange}
+                  placeholder="0"
+                />
+              </div>
+
+              <div className="admin-field-group">
+                <label>
+                  <input
+                    name="active"
+                    type="checkbox"
+                    checked={formData.active}
+                    onChange={handleChange}
+                  />
+                  Active
+                </label>
+              </div>
+
+              <div className="admin-field-group">
+                <label>
+                  <input
+                    name="done"
+                    type="checkbox"
+                    checked={formData.done}
+                    onChange={handleChange}
+                  />
+                  Done
+                </label>
               </div>
             </div>
-          </>
-        )}
+
+            <div className="admin-form-actions">
+              <button
+                className="admin-form-btn"
+                type="submit"
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Add"}
+              </button>
+
+              <button
+                className="admin-form-btn admin-secondary-btn"
+                type="button"
+                onClick={() => navigate("/admin/company-unique-filters")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </AdminLayout>
   );
 }
 
-export default AddCompanyUniqueFilter;
+export default AddCompanyUniqueFilters;

@@ -1,50 +1,99 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+
 import PagePanel from "../components/PagePanel";
 import LeadsActions from "../components/LeadsActions";
 import LeadsTable from "../components/LeadsTable";
-import LeadsFilterModal from "../components/LeadsFilterModal";
 import EmailPreviewModal from "../components/EmailPreviewModal";
-import { leadsData } from "../data/leadsData";
+import { getLoggedUser } from "../../auth/authService";
 
 function Leads() {
+  const [searchParams] = useSearchParams();
+
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+
   const [searchValue, setSearchValue] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedEmail, setSelectedEmail] = useState(null);
   const [filters, setFilters] = useState({
     jobTitle: "",
   });
 
-  function handleExport() {
-    alert("Export to Excel clicked for Leads.xlsx");
-  }
+  const [selectedEmail, setSelectedEmail] = useState(null);
+
+  const comscId = searchParams.get("comscId");
+
+  useEffect(() => {
+    async function loadLeads() {
+      try {
+        setLoading(true);
+        setMessage("");
+
+        const user = getLoggedUser();
+
+        if (!user || !user.email) {
+          setMessage("No logged-in user found.");
+          setLeads([]);
+          return;
+        }
+
+        let url = `http://localhost:3000/api/user/leads?email=${encodeURIComponent(
+          user.email
+        )}`;
+
+        if (comscId) {
+          url += `&comscId=${encodeURIComponent(comscId)}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok) {
+          setMessage(data.message || "Failed to load leads.");
+          setLeads([]);
+          return;
+        }
+
+        setLeads(data);
+      } catch (error) {
+        setMessage(error.message);
+        setLeads([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadLeads();
+  }, [comscId]);
 
   return (
-    <PagePanel title="Leads">
+    <PagePanel title={comscId ? "Selected Company Leads" : "Leads"}>
       <LeadsActions
         searchValue={searchValue}
-        onSearchChange={(e) => setSearchValue(e.target.value)}
-        onFilterClick={() => setIsFilterOpen(true)}
-        onExportClick={handleExport}
-      />
-
-      <LeadsTable
-        leads={leadsData}
-        searchValue={searchValue}
+        setSearchValue={setSearchValue}
         filters={filters}
-        onViewEmail={setSelectedEmail}
+        setFilters={setFilters}
       />
 
-      <LeadsFilterModal
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        onApply={(selectedFilters) => setFilters(selectedFilters)}
-      />
+      {message && <p>{message}</p>}
 
-      <EmailPreviewModal
-        isOpen={selectedEmail !== null}
-        email={selectedEmail}
-        onClose={() => setSelectedEmail(null)}
-      />
+      {loading ? (
+        <p>Loading leads...</p>
+      ) : (
+        <LeadsTable
+          leads={leads}
+          searchValue={searchValue}
+          filters={filters}
+          onViewEmail={setSelectedEmail}
+        />
+      )}
+
+      {selectedEmail && (
+        <EmailPreviewModal
+          email={selectedEmail}
+          onClose={() => setSelectedEmail(null)}
+        />
+      )}
     </PagePanel>
   );
 }

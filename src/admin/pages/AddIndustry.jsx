@@ -1,108 +1,116 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import AdminLayout from "../components/AdminLayout";
-import "../../styles/adminforms.css";
+import { useNavigate } from "react-router-dom";
 
-const industryOptions = [
-  { id: 1, name: "Technology" },
-  { id: 2, name: "Healthcare" },
-  { id: 3, name: "Construction" },
-  { id: 4, name: "Marketing" },
-  { id: 5, name: "Real Estate" },
-  { id: 6, name: "Finance" },
-  { id: 7, name: "Education" },
-  { id: 8, name: "Retail" },
-];
+import AdminLayout from "../components/AdminLayout";
+import "../styles/adminforms.css";
 
 function AddIndustry() {
-  const [industry, setIndustry] = useState("");
-  const [industryId, setIndustryId] = useState("");
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    industry: "",
+    linkedinId: "",
+  });
+
   const [message, setMessage] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const filteredIndustries = industryOptions.filter((item) =>
-    item.name.toLowerCase().includes(industry.toLowerCase())
-  );
+  function handleChange(e) {
+    const { name, value } = e.target;
 
-  function handleIndustryChange(event) {
-    const value = event.target.value;
-
-    setIndustry(value);
-    setIndustryId("");
-
-    if (value.trim().length >= 2) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
-  function selectIndustry(item) {
-    setIndustry(item.name);
-    setIndustryId(item.id);
-    setShowSuggestions(false);
-  }
+  async function handleAdd(e) {
+    e.preventDefault();
 
-  function handleAdd() {
-    if (industry.trim() === "") {
-      setMessage("Please select an industry.");
-      return;
+    try {
+      setSaving(true);
+      setMessage("Saving industry...");
+
+      const response = await fetch("http://localhost:3000/api/industries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add industry");
+      }
+
+      setMessage("Industry added successfully.");
+      navigate("/admin/industry");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setMessage("Industry added successfully.");
-    console.log({
-      industry,
-      industryId,
-    });
   }
 
   return (
     <AdminLayout>
       <div className="admin-form-page">
-        <Link to="/admin/industry" className="admin-back-btn">
-          Back
-        </Link>
+        <div className="admin-form-card">
+          <div className="admin-form-header">
+            <h2>Add Industry</h2>
+          </div>
 
-        <div className="admin-form-card admin-compact-form">
-          <h2>Filter Industry</h2>
+          {message && <p>{message}</p>}
 
-          <div className="admin-field-group">
-            <label>Industry:</label>
+          <form onSubmit={handleAdd}>
+            <div className="admin-form-grid">
+              <div className="admin-field-group">
+                <label>Industry Name</label>
+                <input
+                  name="industry"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Enter industry name"
+                  value={formData.industry}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-            <div className="admin-suggestions-wrap">
-              <input
-                className="admin-input"
-                type="text"
-                placeholder="Start typing industry..."
-                autoComplete="off"
-                value={industry}
-                onChange={handleIndustryChange}
-                onFocus={() => {
-                  if (industry.trim().length >= 2) {
-                    setShowSuggestions(true);
-                  }
-                }}
-              />
-
-              {showSuggestions && filteredIndustries.length > 0 && (
-                <ul className="admin-suggestions-list">
-                  {filteredIndustries.map((item) => (
-                    <li key={item.id} onClick={() => selectIndustry(item)}>
-                      {item.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <div className="admin-field-group">
+                <label>LinkedIn ID</label>
+                <input
+                  name="linkedinId"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Enter LinkedIn ID"
+                  value={formData.linkedinId}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
-            </button>
+            <div className="admin-form-actions">
+              <button
+                className="admin-form-btn"
+                type="submit"
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Add"}
+              </button>
 
-            {message && <span className="admin-message-label">{message}</span>}
-          </div>
+              <button
+                className="admin-form-btn admin-secondary-btn"
+                type="button"
+                onClick={() => navigate("/admin/industry")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </AdminLayout>

@@ -1,108 +1,116 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import AdminLayout from "../components/AdminLayout";
-import "../../styles/adminforms.css";
+import { useNavigate } from "react-router-dom";
 
-const locationOptions = [
-  { id: 1, name: "Amman, Jordan" },
-  { id: 2, name: "Dubai, UAE" },
-  { id: 3, name: "Riyadh, Saudi Arabia" },
-  { id: 4, name: "Jeddah, Saudi Arabia" },
-  { id: 5, name: "Doha, Qatar" },
-  { id: 6, name: "Abu Dhabi, UAE" },
-  { id: 7, name: "Cairo, Egypt" },
-  { id: 8, name: "Dammam, Saudi Arabia" },
-];
+import AdminLayout from "../components/AdminLayout";
+import "../styles/adminforms.css";
 
 function AddLocation() {
-  const [location, setLocation] = useState("");
-  const [locationId, setLocationId] = useState("");
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    location: "",
+    linkedinId: "",
+  });
+
   const [message, setMessage] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const filteredLocations = locationOptions.filter((item) =>
-    item.name.toLowerCase().includes(location.toLowerCase())
-  );
+  function handleChange(e) {
+    const { name, value } = e.target;
 
-  function handleLocationChange(event) {
-    const value = event.target.value;
-
-    setLocation(value);
-    setLocationId("");
-
-    if (value.trim().length >= 2) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
-  function selectLocation(item) {
-    setLocation(item.name);
-    setLocationId(item.id);
-    setShowSuggestions(false);
-  }
+  async function handleAdd(e) {
+    e.preventDefault();
 
-  function handleAdd() {
-    if (location.trim() === "") {
-      setMessage("Please select a location.");
-      return;
+    try {
+      setSaving(true);
+      setMessage("Saving location...");
+
+      const response = await fetch("http://localhost:3000/api/locations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add location");
+      }
+
+      setMessage("Location added successfully.");
+      navigate("/admin/location");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setMessage("Location added successfully.");
-    console.log({
-      location,
-      locationId,
-    });
   }
 
   return (
     <AdminLayout>
       <div className="admin-form-page">
-        <Link to="/admin/location" className="admin-back-btn">
-          Back
-        </Link>
+        <div className="admin-form-card">
+          <div className="admin-form-header">
+            <h2>Add Location</h2>
+          </div>
 
-        <div className="admin-form-card admin-compact-form">
-          <h2>Filter Location</h2>
+          {message && <p>{message}</p>}
 
-          <div className="admin-field-group">
-            <label>Location:</label>
+          <form onSubmit={handleAdd}>
+            <div className="admin-form-grid">
+              <div className="admin-field-group">
+                <label>Location Name</label>
+                <input
+                  name="location"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Enter location name"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-            <div className="admin-suggestions-wrap">
-              <input
-                className="admin-input"
-                type="text"
-                placeholder="Start typing location..."
-                autoComplete="off"
-                value={location}
-                onChange={handleLocationChange}
-                onFocus={() => {
-                  if (location.trim().length >= 2) {
-                    setShowSuggestions(true);
-                  }
-                }}
-              />
-
-              {showSuggestions && filteredLocations.length > 0 && (
-                <ul className="admin-suggestions-list">
-                  {filteredLocations.map((item) => (
-                    <li key={item.id} onClick={() => selectLocation(item)}>
-                      {item.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <div className="admin-field-group">
+                <label>LinkedIn ID</label>
+                <input
+                  name="linkedinId"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Enter LinkedIn ID"
+                  value={formData.linkedinId}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
-            </button>
+            <div className="admin-form-actions">
+              <button
+                className="admin-form-btn"
+                type="submit"
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Add"}
+              </button>
 
-            {message && <span className="admin-message-label">{message}</span>}
-          </div>
+              <button
+                className="admin-form-btn admin-secondary-btn"
+                type="button"
+                onClick={() => navigate("/admin/location")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </AdminLayout>

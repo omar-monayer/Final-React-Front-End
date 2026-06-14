@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginWithExcel, saveLoggedUser } from "../auth/authService";
 import "../styles/login.css";
+import { loginUser } from "../auth/authService";
 
 function Login() {
   const navigate = useNavigate();
@@ -13,40 +13,34 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    setError("");
-    setLoading(true);
+  setError("");
+  setLoading(true);
 
-    try {
-      const user = await loginWithExcel(email, password);
+  try {
+    const user = await loginUser(email, password);
 
-      if (!user) {
-        setError("Invalid email or password.");
-        setLoading(false);
-        return;
-      }
-
-      if (user.role !== "admin" && user.role !== "user") {
-        setError("Invalid user role in Excel file.");
-        setLoading(false);
-        return;
-      }
-
-      saveLoggedUser(user);
-
-      if (user.role === "admin") {
-        navigate("/admin/company-filters");
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      setError(err.message || "Login failed.");
-    } finally {
-      setLoading(false);
+    if (!user) {
+      setError("Invalid email or password.");
+      return;
     }
-  }
 
+    const role = String(user.role).toLowerCase();
+
+    if (role === "admin") {
+      navigate("/admin/company-filters");
+    } else if (role === "user") {
+      navigate("/");
+    } else {
+      setError("Invalid user role.");
+    }
+  } catch (err) {
+    setError(err.message || "Login failed.");
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>

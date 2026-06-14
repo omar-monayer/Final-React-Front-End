@@ -1,25 +1,40 @@
+import { useNavigate } from "react-router-dom";
+
 import ActionButton from "./ActionButton";
 import ExpandableCell from "./ExpandableCell";
 import "../styles/table.css";
 
-function CompaniesTable({ companies, searchValue = "", filters = {} }) {
+function CompaniesTable({ companies = [], searchValue = "", filters = {} }) {
+  const navigate = useNavigate();
+
+  function handleSelectCompany(company) {
+    navigate(`/leads?comscId=${company.id}`);
+  }
+
   const filteredCompanies = companies.filter((company) => {
     const searchText = searchValue.toLowerCase().trim();
 
+    const companyName = company.companyName || "";
+    const about = company.aboutFull || "";
+    const websiteUrl = company.websiteUrl || "";
+    const linkedinUrl = company.linkedinUrl || "";
+
     const matchesSearch =
-      !searchText || company.companyName.toLowerCase().includes(searchText);
+      !searchText ||
+      companyName.toLowerCase().includes(searchText) ||
+      about.toLowerCase().includes(searchText) ||
+      websiteUrl.toLowerCase().includes(searchText) ||
+      linkedinUrl.toLowerCase().includes(searchText);
 
     const matchesCountry =
       !filters.country || company.country === filters.country;
 
-    const matchesState =
-      !filters.state || company.state === filters.state;
+    const matchesState = !filters.state || company.state === filters.state;
 
     const matchesIndustry =
       !filters.industry || company.industry === filters.industry;
 
-    const matchesSize =
-      !filters.size || company.size === filters.size;
+    const matchesSize = !filters.size || company.size === filters.size;
 
     return (
       matchesSearch &&
@@ -39,9 +54,6 @@ function CompaniesTable({ companies, searchValue = "", filters = {} }) {
             <th>About</th>
             <th>Website Url</th>
             <th>LinkedIn</th>
-            <th>Location</th>
-            <th>Industry</th>
-            <th>Size</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -49,7 +61,7 @@ function CompaniesTable({ companies, searchValue = "", filters = {} }) {
         <tbody>
           {filteredCompanies.map((company, index) => (
             <tr
-              key={company.companyName}
+              key={company.id}
               className={index % 2 === 0 ? "grid-alt" : ""}
             >
               <td>{company.companyName}</td>
@@ -63,19 +75,17 @@ function CompaniesTable({ companies, searchValue = "", filters = {} }) {
 
               <ExpandableCell link={company.linkedinUrl} />
 
-              <td>{company.location}</td>
-              <td>{company.industry}</td>
-              <td>{company.size}</td>
-
               <td>
-                <ActionButton>Select</ActionButton>
+                <ActionButton onClick={() => handleSelectCompany(company)}>
+                  Select
+                </ActionButton>
               </td>
             </tr>
           ))}
 
           {filteredCompanies.length === 0 && (
             <tr>
-              <td colSpan="8" className="empty-row">
+              <td colSpan="5" className="empty-row">
                 No companies found.
               </td>
             </tr>
