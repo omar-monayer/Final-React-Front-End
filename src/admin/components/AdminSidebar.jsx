@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function AdminSidebar() {
+function AdminSidebar({ children }) {
   return (
     <aside className="admin-sidenav">
       <h3>Pages</h3>
@@ -58,6 +58,7 @@ function AdminSidebar() {
       >
         Job Titles
       </NavLink>
+      {children}
     </aside>
   );
 }

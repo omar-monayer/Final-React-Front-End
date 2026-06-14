@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ children }) {
   return (
     <aside className="sidenav">
       <h3>Menu</h3>
@@ -25,6 +25,10 @@ function Sidebar() {
       >
         Leads
       </NavLink>
+
+      <div className="sidebar-logout">
+        {children}
+      </div>
     </aside>
   );
 }

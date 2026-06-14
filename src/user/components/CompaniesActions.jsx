@@ -4,26 +4,32 @@ import "../styles/companiesactions.css";
 
 function CompaniesActions({
   searchValue,
-  onSearchChange,
-  onFilterClick,
-  onExportClick,
+  setSearchValue,
+  onExportClick
 }) {
+  function handleSearchChange(event) {
+    setSearchValue(event.target.value);
+  }
+
   return (
     <div className="companies-actions">
       <div className="companies-left-actions">
-        <ActionButton onClick={onFilterClick}>Filter</ActionButton>
-
         <SearchInput
           value={searchValue}
-          onChange={onSearchChange}
-          placeholder="Search Company..."
+          onChange={handleSearchChange}
+          placeholder="Search companies..."
         />
       </div>
 
-      <div className="companies-right-actions">
+      {/* <ActionButton>Filter</ActionButton> */}
+      {/* <ActionButton>Sort</ActionButton> */}
+       
+        <div className="companies-right-actions">
         <ActionButton onClick={onExportClick}>Export to Excel</ActionButton>
       </div>
+      
     </div>
+    
   );
 }
 

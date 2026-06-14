@@ -1,13 +1,69 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
+import { logoutUser, getAuthHeaders } from "../../auth/authService";
 import "../styles/adminmain.css";
 
 function AdminLayout({ children }) {
+  const navigate = useNavigate();
+
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
+  const [adminMessage, setAdminMessage] = useState("");
+
+  useEffect(() => {
+    async function checkAdminAccess() {
+      try {
+        const response = await fetch("http://localhost:3000/api/admin/check", {
+          headers: getAuthHeaders(),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setAdminMessage(data.message || "Admin access only");
+          return;
+        }
+
+        setAdminMessage("");
+      } catch (error) {
+        setAdminMessage(error.message);
+      } finally {
+        setCheckingAdmin(false);
+      }
+    }
+
+    checkAdminAccess();
+  }, []);
+
+  function handleLogout() {
+    logoutUser();
+    navigate("/login");
+  }
+
   return (
     <div className="admin-container">
-      <AdminSidebar />
+      <AdminSidebar>
+        <div className="sidebar-logout">
+          <button
+            type="button"
+            className="admin-action-btn admin-secondary-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      </AdminSidebar>
 
       <main className="admin-content">
-        {children}
+        {checkingAdmin && <p>Checking admin access...</p>}
+
+        {!checkingAdmin && adminMessage && (
+          <div className="admin-message-error">
+            {adminMessage}
+          </div>
+        )}
+
+        {!checkingAdmin && !adminMessage && children}
       </main>
     </div>
   );

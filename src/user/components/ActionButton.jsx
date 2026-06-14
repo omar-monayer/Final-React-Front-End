@@ -1,8 +1,8 @@
 import "../styles/actionbutton.css";
 
-function ActionButton({ children, type = "button", onClick }) {
+function ActionButton({ children, onClick, type = "button" }) {
   return (
-    <button className="action-btn" type={type} onClick={onClick}>
+    <button type={type} className="action-btn" onClick={onClick}>
       {children}
     </button>
   );

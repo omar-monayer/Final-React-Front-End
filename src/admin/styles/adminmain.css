@@ -214,3 +214,12 @@
     height: auto;
   }
 }
+.admin-message-error {
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  color: #ffb4b4;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-weight: 700;
+}

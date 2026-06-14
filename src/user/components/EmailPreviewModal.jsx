@@ -1,34 +1,36 @@
 import "../styles/emailpreviewmodal.css";
 
-function EmailPreviewModal({ isOpen, email, onClose }) {
-  if (!isOpen || !email) {
-    return null;
-  }
-
-  function handleOverlayClick(event) {
-    if (event.target.className === "email-modal") {
-      onClose();
-    }
-  }
+function EmailPreviewModal({ email, onClose }) {
+  if (!email) return null;
 
   return (
-    <div className="email-modal" onClick={handleOverlayClick}>
-      <div className="email-modal-content">
-        <button className="close" type="button" onClick={onClose}>
-          &times;
-        </button>
+    <div className="email-modal-overlay">
+      <div className="email-modal">
+        <div className="email-modal-header">
+          <h2>Email Preview</h2>
 
-        <h3>{email.subject}</h3>
+          <button type="button" onClick={onClose}>
+            ×
+          </button>
+        </div>
 
-        <p>
-          <strong>Last Contacted:</strong> {email.lastContacted}
-        </p>
+        <div className="email-modal-body">
+          <p>
+            <strong>Subject:</strong> {email.subject}
+          </p>
 
-        <div className="email-structure">
-          <iframe
-            title="Email Preview"
-            className="email-frame"
-            srcDoc={email.body}
+          <p>
+            <strong>Last Contacted:</strong>{" "}
+            {email.lastContacted
+              ? new Date(email.lastContacted).toLocaleString()
+              : "Not contacted yet"}
+          </p>
+
+          <hr />
+
+          <div
+            className="email-html-content"
+            dangerouslySetInnerHTML={{ __html: email.body }}
           />
         </div>
       </div>

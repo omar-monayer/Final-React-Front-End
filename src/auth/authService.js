@@ -1,55 +1,59 @@
-import * as XLSX from "xlsx";
+const API_URL = "http://localhost:3000/api/auth";
 
-export async function loginWithExcel(email, password) {
-  const response = await fetch("/data/users.xlsx");
-
-  if (!response.ok) {
-    throw new Error("Users Excel file was not found.");
-  }
-
-  const arrayBuffer = await response.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer, { type: "array" });
-
-  const firstSheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[firstSheetName];
-
-  const users = XLSX.utils.sheet_to_json(worksheet);
-
-  const foundUser = users.find((user) => {
-    const userEmail = String(user.Email || "").trim().toLowerCase();
-    const userPassword = String(user.Password || "").trim();
-
-    return (
-      userEmail === email.trim().toLowerCase() &&
-      userPassword === password.trim()
-    );
+export async function loginUser(email, password) {
+  const response = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
   });
 
-  if (!foundUser) {
-    return null;
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Invalid email or password");
   }
 
-  return {
-    email: foundUser.Email,
-    name: foundUser.Name || foundUser.Email,
-    role: String(foundUser.Role || "").trim().toLowerCase(),
-  };
-}
+  localStorage.setItem("user", JSON.stringify(data.user));
 
-export function saveLoggedUser(user) {
-  localStorage.setItem("loggedUser", JSON.stringify(user));
+  return data.user;
 }
 
 export function getLoggedUser() {
-  const storedUser = localStorage.getItem("loggedUser");
+  const savedUser = localStorage.getItem("user");
 
-  if (!storedUser) {
+  if (!savedUser) {
     return null;
   }
 
-  return JSON.parse(storedUser);
+  return JSON.parse(savedUser);
+}
+
+export function getCurrentUser() {
+  return getLoggedUser();
 }
 
 export function logoutUser() {
-  localStorage.removeItem("loggedUser");
+  localStorage.removeItem("user");
+}
+
+export function getAuthHeaders() {
+  const savedUser = localStorage.getItem("user");
+
+  if (!savedUser) {
+    return {
+      "Content-Type": "application/json",
+    };
+  }
+
+  const user = JSON.parse(savedUser);
+
+  return {
+    "Content-Type": "application/json",
+    "x-role": user.role,
+  };
 }

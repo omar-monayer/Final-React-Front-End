@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
 
 function AddSize() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     size: "",
-    linkedinId: "",
   });
 
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
+  const [saving, setSaving] = useState(false);
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  function handleChange(e) {
+    const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -21,70 +23,81 @@ function AddSize() {
     }));
   }
 
-  function handleAdd() {
-    if (!formData.size.trim() || !formData.linkedinId.trim()) {
-      setMessage("Please fill in all fields.");
-      setMessageType("error");
-      return;
+  async function handleAdd(e) {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      setMessage("Saving size...");
+
+      const response = await fetch("http://localhost:3000/api/sizes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add size");
+      }
+
+      setMessage("Size added successfully.");
+      navigate("/admin/size");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setMessage("Size added successfully.");
-    setMessageType("success");
-
-    console.log(formData);
   }
 
   return (
     <AdminLayout>
       <div className="admin-form-page">
-        <Link to="/admin/size" className="admin-back-btn">
-          Back
-        </Link>
-
-        <div className="admin-form-card admin-compact-form">
-          <h2>Filter Size</h2>
-
-          <div className="admin-field-group">
-            <label>Size:</label>
-            <input
-              name="size"
-              className="admin-input"
-              type="text"
-              placeholder="Enter Size"
-              value={formData.size}
-              onChange={handleChange}
-            />
+        <div className="admin-form-card">
+          <div className="admin-form-header">
+            <h2>Add Size</h2>
           </div>
 
-          <div className="admin-field-group">
-            <label>Linked-In ID For Size:</label>
-            <input
-              name="linkedinId"
-              className="admin-input"
-              type="text"
-              placeholder="Enter LinkedIn ID"
-              value={formData.linkedinId}
-              onChange={handleChange}
-            />
-          </div>
+          {message && <p>{message}</p>}
 
-          <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
-            </button>
+          <form onSubmit={handleAdd}>
+            <div className="admin-form-grid">
+              <div className="admin-field-group">
+                <label>Size Range</label>
+                <input
+                  name="size"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Example: 1-10"
+                  value={formData.size}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-            {message && (
-              <span
-                className={
-                  messageType === "error"
-                    ? "admin-message-label admin-error-message"
-                    : "admin-message-label"
-                }
+            <div className="admin-form-actions">
+              <button
+                className="admin-form-btn"
+                type="submit"
+                disabled={saving}
               >
-                {message}
-              </span>
-            )}
-          </div>
+                {saving ? "Saving..." : "Add"}
+              </button>
+
+              <button
+                className="admin-form-btn admin-secondary-btn"
+                type="button"
+                onClick={() => navigate("/admin/size")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </AdminLayout>

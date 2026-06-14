@@ -3,18 +3,24 @@ import ExpandableCell from "./ExpandableCell";
 import "../styles/table.css";
 import "../styles/leadstable.css";
 
-function LeadsTable({ leads, searchValue = "", filters = {}, onViewEmail }) {
+function LeadsTable({ leads = [], searchValue = "", filters = {}, onViewEmail }) {
   const filteredLeads = leads.filter((lead) => {
     const searchText = searchValue.toLowerCase().trim();
 
+    const name = lead.name || "";
+    const emailAddress = lead.emailAddress || "";
+    const companyName = lead.companyName || "";
+    const position = lead.position || "";
+
     const matchesSearch =
       !searchText ||
-      lead.firstName.toLowerCase().includes(searchText) ||
-      lead.lastName.toLowerCase().includes(searchText) ||
-      lead.companyFull.toLowerCase().includes(searchText);
+      name.toLowerCase().includes(searchText) ||
+      emailAddress.toLowerCase().includes(searchText) ||
+      companyName.toLowerCase().includes(searchText) ||
+      position.toLowerCase().includes(searchText);
 
     const matchesJobTitle =
-      !filters.jobTitle || lead.jobTitleFull === filters.jobTitle;
+      !filters.jobTitle || position === filters.jobTitle;
 
     return matchesSearch && matchesJobTitle;
   });
@@ -27,8 +33,7 @@ function LeadsTable({ leads, searchValue = "", filters = {}, onViewEmail }) {
             <th>Email</th>
             <th>User Email</th>
             <th>LinkedIn</th>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>Name</th>
             <th>Company Name</th>
             <th>Job Title</th>
             <th>Last Contacted</th>
@@ -42,44 +47,39 @@ function LeadsTable({ leads, searchValue = "", filters = {}, onViewEmail }) {
             <tr key={lead.id} className={index % 2 === 0 ? "grid-alt" : ""}>
               <td>
                 <ActionButton
-                  onClick={() =>
+                  onClick={() => {
+                    console.log("View clicked:", lead);
+
                     onViewEmail({
-                      subject: lead.emailSubject,
-                      body: lead.emailBody,
-                      lastContacted: lead.lastContacted,
-                    })
-                  }
+                      subject: lead.emailSubject || "No subject",
+                      body: lead.emailContent || "No email content found.",
+                      lastContacted: lead.lastContacted || "Not contacted yet",
+                    });
+                  }}
                 >
                   View
                 </ActionButton>
               </td>
 
-              <td>{lead.userEmail}</td>
+              <td>{lead.emailAddress}</td>
 
               <ExpandableCell link={lead.linkedinUrl} />
 
-              <td>{lead.firstName}</td>
-              <td>{lead.lastName}</td>
+              <td>{lead.name}</td>
 
-              <ExpandableCell
-                shortText={lead.companyShort}
-                fullText={lead.companyFull}
-              />
+              <td>{lead.companyName}</td>
 
-              <ExpandableCell
-                shortText={lead.jobTitleShort}
-                fullText={lead.jobTitleFull}
-              />
+              <td>{lead.position}</td>
 
               <td>{lead.lastContacted}</td>
-              <td>{lead.clicked}</td>
-              <td>{lead.opened}</td>
+              <td>{lead.clicked ? "Yes" : "No"}</td>
+              <td>{lead.opened ? "Yes" : "No"}</td>
             </tr>
           ))}
 
           {filteredLeads.length === 0 && (
             <tr>
-              <td colSpan="10" className="empty-row">
+              <td colSpan="9" className="empty-row">
                 No leads found.
               </td>
             </tr>

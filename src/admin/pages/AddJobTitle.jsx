@@ -1,66 +1,103 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
 
 function AddJobTitle() {
-  const [jobTitle, setJobTitle] = useState("");
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    jobTitle: "",
+  });
+
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
+  const [saving, setSaving] = useState(false);
 
-  function handleAdd() {
-    if (jobTitle.trim() === "") {
-      setMessage("Please enter a job title.");
-      setMessageType("error");
-      return;
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleAdd(e) {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      setMessage("Saving job title...");
+
+      const response = await fetch("http://localhost:3000/api/job-titles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add job title");
+      }
+
+      setMessage("Job title added successfully.");
+      navigate("/admin/job-titles");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setMessage("Job title added successfully.");
-    setMessageType("success");
-
-    console.log({
-      jobTitle,
-    });
   }
 
   return (
     <AdminLayout>
       <div className="admin-form-page">
-        <Link to="/admin/job-titles" className="admin-back-btn">
-          Back
-        </Link>
-
-        <div className="admin-form-card admin-compact-form">
-          <h2>Add Job Title</h2>
-
-          <div className="admin-field-group">
-            <label>Job Title:</label>
-            <input
-              className="admin-input"
-              type="text"
-              placeholder="Enter Job Title"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-            />
+        <div className="admin-form-card">
+          <div className="admin-form-header">
+            <h2>Add Job Title</h2>
           </div>
 
-          <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
-            </button>
+          {message && <p>{message}</p>}
 
-            {message && (
-              <span
-                className={
-                  messageType === "error"
-                    ? "admin-message-label admin-error-message"
-                    : "admin-message-label"
-                }
+          <form onSubmit={handleAdd}>
+            <div className="admin-form-grid">
+              <div className="admin-field-group">
+                <label>Job Title</label>
+                <input
+                  name="jobTitle"
+                  className="admin-input"
+                  type="text"
+                  placeholder="Example: Software Engineer"
+                  value={formData.jobTitle}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="admin-form-actions">
+              <button
+                className="admin-form-btn"
+                type="submit"
+                disabled={saving}
               >
-                {message}
-              </span>
-            )}
-          </div>
+                {saving ? "Saving..." : "Add"}
+              </button>
+
+              <button
+                className="admin-form-btn admin-secondary-btn"
+                type="button"
+                onClick={() => navigate("/admin/job-titles")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </AdminLayout>

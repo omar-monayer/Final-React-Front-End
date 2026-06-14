@@ -1,64 +1,77 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
 
-const jobTitleOptions = [
-  "CEO",
-  "Founder",
-  "Marketing Director",
-  "Sales Manager",
-  "Operations Manager",
-  "Business Development Manager",
-];
 
-const companyOptions = [
-  { id: 101, name: "NEXSUS" },
-  { id: 102, name: "Remodco" },
-  { id: 103, name: "Pro Window Remodel" },
-];
-
-const existingFilters = [
-  {
-    company: "NEXSUS",
-    arabicName: "نكسس",
-    englishName: "NEXSUS Team",
-    smtpHost: "smtp.nex-sus.com",
-    port: "587",
-    calendly: "calendly.com/nexsus",
-  },
-  {
-    company: "Remodco",
-    arabicName: "ريمودكو",
-    englishName: "Remodco Sales",
-    smtpHost: "smtp.remodco.com",
-    port: "465",
-    calendly: "calendly.com/remodco",
-  },
-];
 
 function AddCompanyFilters() {
+  const navigate = useNavigate();
+
+  const [companies, setCompanies] = useState([]);
+  const [jobTitleOptions, setJobTitleOptions] = useState([]);
+  const [existingFilters, setExistingFilters] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+
   const [formData, setFormData] = useState({
-    companyProfile: "",
-    senderArabicName: "",
-    senderEnglishName: "",
-    numberOfLeads: "",
-    smtpHost: "",
-    smtpPort: "",
-    smtpSender: "",
-    smtpAlias: "",
-    smtpAppPassword: "",
-    emailSignature: "",
-    proposalInfo: "",
-    calendly: "",
-    jobTitles: [],
-    company: "",
-  });
+  companyId: "",
+  companyName: "",
+  companyProfile: "",
+  senderArabicName: "",
+  senderEnglishName: "",
+  numberOfLeads: "",
+  smtpHost: "",
+  smtpPort: "",
+  smtpSender: "",
+  smtpAlias: "",
+  smtpAppPassword: "",
+  emailSignature: "",
+  proposalInfo: "",
+  calendly: "",
+  jobTitleIds: [],
+});
 
   const [message, setMessage] = useState("Ready to add company filter.");
   const [isJobPopupOpen, setIsJobPopupOpen] = useState(false);
   const [isCompanyPopupOpen, setIsCompanyPopupOpen] = useState(false);
   const [jobSearch, setJobSearch] = useState("");
+
+  useEffect(() => {
+  async function loadPageData() {
+    try {
+      const [companiesResponse, jobTitlesResponse, filtersResponse] =
+        await Promise.all([
+          fetch("http://localhost:3000/api/company-filters/companies"),
+          fetch("http://localhost:3000/api/company-filters/job-titles"),
+          fetch("http://localhost:3000/api/company-filters"),
+        ]);
+
+      if (!companiesResponse.ok) {
+        throw new Error("Failed to load companies");
+      }
+
+      if (!jobTitlesResponse.ok) {
+        throw new Error("Failed to load job titles");
+      }
+
+      if (!filtersResponse.ok) {
+        throw new Error("Failed to load company filters");
+      }
+
+      const companiesData = await companiesResponse.json();
+      const jobTitlesData = await jobTitlesResponse.json();
+      const filtersData = await filtersResponse.json();
+
+      setCompanies(companiesData);
+      setJobTitleOptions(jobTitlesData);
+      setExistingFilters(filtersData);
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  loadPageData();
+}, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -69,32 +82,74 @@ function AddCompanyFilters() {
     }));
   }
 
-  function toggleJobTitle(jobTitle) {
-    setFormData((prev) => {
-      const alreadySelected = prev.jobTitles.includes(jobTitle);
+  function toggleJobTitle(jobTitleId) {
+  setFormData((prev) => {
+    const alreadySelected = prev.jobTitleIds.includes(jobTitleId);
 
-      return {
-        ...prev,
-        jobTitles: alreadySelected
-          ? prev.jobTitles.filter((title) => title !== jobTitle)
-          : [...prev.jobTitles, jobTitle],
-      };
-    });
-  }
-
-  function selectCompany(companyName) {
-    setFormData((prev) => ({
+    return {
       ...prev,
-      company: companyName,
-    }));
+      jobTitleIds: alreadySelected
+        ? prev.jobTitleIds.filter((id) => id !== jobTitleId)
+        : [...prev.jobTitleIds, jobTitleId],
+    };
+  });
+}
 
-    setIsCompanyPopupOpen(false);
-  }
+  function selectCompany(company) {
+  setFormData((prev) => ({
+    ...prev,
+    companyId: company.id,
+    companyName: company.name,
+  }));
 
-  function handleAdd() {
+  setIsCompanyPopupOpen(false);
+}
+  async function handleAdd() {
+  try {
+    setIsSaving(true);
+    setMessage("Saving company filter...");
+
+    const response = await fetch("http://localhost:3000/api/company-filters", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create company filter");
+    }
+
     setMessage("Company filter added successfully.");
-    console.log(formData);
+
+    setFormData({
+      companyId: "",
+      companyName: "",
+      companyProfile: "",
+      senderArabicName: "",
+      senderEnglishName: "",
+      numberOfLeads: "",
+      smtpHost: "",
+      smtpPort: "",
+      smtpSender: "",
+      smtpAlias: "",
+      smtpAppPassword: "",
+      emailSignature: "",
+      proposalInfo: "",
+      calendly: "",
+      jobTitleIds: [],
+    });
+
+    navigate("/admin/company-filters");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setIsSaving(false);
   }
+}
 
   function closePopups() {
     setIsJobPopupOpen(false);
@@ -102,7 +157,7 @@ function AddCompanyFilters() {
   }
 
   const filteredJobTitles = jobTitleOptions.filter((jobTitle) =>
-    jobTitle.toLowerCase().includes(jobSearch.toLowerCase())
+  jobTitle.name.toLowerCase().includes(jobSearch.toLowerCase())
   );
 
   return (
@@ -263,7 +318,10 @@ function AddCompanyFilters() {
                 className="admin-input"
                 type="text"
                 placeholder="Select Job Titles"
-                value={formData.jobTitles.join(", ")}
+                value={jobTitleOptions
+                      .filter((jobTitle) => formData.jobTitleIds.includes(jobTitle.id))
+                      .map((jobTitle) => jobTitle.name)
+                      .join(", ")}
                 readOnly
                 onClick={() => setIsJobPopupOpen(true)}
               />
@@ -293,8 +351,13 @@ function AddCompanyFilters() {
           </div>
 
           <div className="admin-form-btn-row">
-            <button className="admin-form-btn" type="button" onClick={handleAdd}>
-              Add
+           <button
+              className="admin-form-btn"
+              type="button"
+              onClick={handleAdd}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving..." : "Add"}
             </button>
 
             <span className="admin-message-label">{message}</span>
@@ -347,13 +410,13 @@ function AddCompanyFilters() {
 
             <div className="admin-job-list">
               {filteredJobTitles.map((jobTitle) => (
-                <label className="admin-job-item" key={jobTitle}>
+                <label className="admin-job-item" key={jobTitle.id}>
                   <input
                     type="checkbox"
-                    checked={formData.jobTitles.includes(jobTitle)}
-                    onChange={() => toggleJobTitle(jobTitle)}
+                    checked={formData.jobTitleIds.includes(jobTitle.id)}
+                    onChange={() => toggleJobTitle(jobTitle.id)}
                   />
-                  {jobTitle}
+                  {jobTitle.name}
                 </label>
               ))}
             </div>
@@ -385,7 +448,7 @@ function AddCompanyFilters() {
                 </thead>
 
                 <tbody>
-                  {companyOptions.map((company) => (
+                  {companies.map((company) => (
                     <tr key={company.id}>
                       <td>{company.name}</td>
                       <td>{company.id}</td>
@@ -393,7 +456,7 @@ function AddCompanyFilters() {
                         <button
                           className="admin-form-btn"
                           type="button"
-                          onClick={() => selectCompany(company.name)}
+                          onClick={() => selectCompany(company)}
                         >
                           Select
                         </button>

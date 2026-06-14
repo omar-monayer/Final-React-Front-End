@@ -1,8 +1,16 @@
 import ActionButton from "./ActionButton";
 import ExpandableCell from "./ExpandableCell";
 import "../styles/table.css";
+import { useNavigate } from "react-router-dom";
 
 function DashboardTable({ companies }) {
+
+  const navigate = useNavigate();
+
+function handleSelect(company) {
+  navigate(`/companies?coflId=${company.id}`);
+}
+
   return (
     <div className="grid-wrapper">
       <table className="grid" id="grid">
@@ -45,7 +53,13 @@ function DashboardTable({ companies }) {
 
               <td>
                 <form className="select-form">
-                  <ActionButton>Select</ActionButton>
+                  <ActionButton
+                    type="button"
+                    className="admin-action-btn admin-secondary-btn"
+                    onClick={() => handleSelect(company)}
+                  >
+                    Select
+                  </ActionButton>
                 </form>
               </td>
             </tr>
