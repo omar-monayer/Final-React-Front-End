@@ -22,6 +22,7 @@ import AddLocation from "./admin/pages/AddLocation";
 import AddIndustry from "./admin/pages/AddIndustry";
 import AddSize from "./admin/pages/AddSize";
 import AddJobTitle from "./admin/pages/AddJobTitle";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -91,7 +92,7 @@ function App() {
         />
       </Route>
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+     <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
