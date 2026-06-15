@@ -1,0 +1,41 @@
+.notfound-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 174, 255, 0.18), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(0, 255, 200, 0.1), transparent 25%),
+    linear-gradient(135deg, #050b16 0%, #0b1220 45%, #0f1b2d 100%);
+  color: #eaf4ff;
+}
+
+.notfound-card {
+  background: rgba(10, 18, 32, 0.92);
+  border: 1px solid rgba(0, 174, 255, 0.25);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+}
+
+.notfound-code {
+  font-size: 110px;
+  font-weight: 900;
+  line-height: 1;
+  color: #00aeff;
+  text-shadow: 0 0 25px rgba(0, 174, 255, 0.35);
+}
+
+.notfound-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.notfound-text {
+  color: #9fb2d1;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.notfound-footer {
+  color: #6f819d;
+  font-size: 14px;
+}

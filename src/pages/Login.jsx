@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { loginUser } from "../auth/authService";
@@ -11,6 +11,22 @@ function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+  async function loadWeather() {
+    try {
+      const response = await fetch("http://localhost:3000/api/weather/amman");
+      const data = await response.json();
+      setWeather(data);
+    } catch (error) {
+      console.log("Weather failed to load:", error.message);
+    }
+  }
+
+  loadWeather();
+}, []);
 
   async function handleSubmit(event) {
   event.preventDefault();
@@ -46,6 +62,32 @@ function Login() {
       <form className="login-card" onSubmit={handleSubmit}>
         <h1>Login</h1>
         <p>Sign in to continue</p>
+
+        {weather ? (
+          <div className="card bg-dark border-info text-light mb-4 shadow-sm">
+            <div className="card-body">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="badge text-bg-info">Live Weather</span>
+              </div>
+
+              <h6 className="card-title mb-2">🌤️ {weather.city}</h6>
+
+              <div className="d-flex justify-content-between align-items-center">
+                <strong className="fs-3">{Math.round(weather.temperature)}°C</strong>
+                <span className="text-secondary">{weather.description}</span>
+              </div>
+
+              <small className="text-secondary">
+                Wind speed: {weather.windSpeed} km/h
+              </small>
+            </div>
+          </div>
+        ) : (
+          <div className="alert alert-info d-flex align-items-center gap-2 mb-4">
+            <div className="spinner-border spinner-border-sm" role="status"></div>
+            <span>Loading live weather...</span>
+          </div>
+        )}
 
         {error && <div className="login-error">{error}</div>}
 
