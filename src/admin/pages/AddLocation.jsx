@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import API_URL from "../../config/api";
 
 function AddLocation() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function AddLocation() {
       setSaving(true);
       setMessage("Saving location...");
 
-      const response = await fetch("http://localhost:3000/api/locations", {
+      const response = await fetch(`${API_URL}/api/locations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

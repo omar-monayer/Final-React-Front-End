@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import IndustryTable from "../components/IndustryTable";
+import API_URL from "../../config/api";
 
 function IndustryDashboard() {
   const [industries, setIndustries] = useState([]);
@@ -13,7 +14,7 @@ function IndustryDashboard() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/industries");
+      const response = await fetch(`${API_URL}/api/industries`);
 
       if (!response.ok) {
         throw new Error("Failed to load industries");
@@ -33,7 +34,7 @@ function IndustryDashboard() {
   }, []);
 
   async function handleUpdateIndustry(id, updatedData) {
-    const response = await fetch(`http://localhost:3000/api/industries/${id}`, {
+    const response = await fetch(`${API_URL}/api/industries/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ function IndustryDashboard() {
       return;
     }
 
-    const response = await fetch(`http://localhost:3000/api/industries/${id}`, {
+    const response = await fetch(`${API_URL}/api/industries/${id}`, {
       method: "DELETE",
     });
 

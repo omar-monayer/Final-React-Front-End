@@ -6,6 +6,7 @@ import LeadsActions from "../components/LeadsActions";
 import LeadsTable from "../components/LeadsTable";
 import EmailPreviewModal from "../components/EmailPreviewModal";
 import { getLoggedUser } from "../../auth/authService";
+import API_URL from "../../config/api";
 
 function Leads() {
   const [searchParams] = useSearchParams();
@@ -37,7 +38,7 @@ function Leads() {
           return;
         }
 
-        let url = `http://localhost:3000/api/user/leads?email=${encodeURIComponent(
+        let url = `${API_URL}/api/user/leads?email=${encodeURIComponent(
           user.email
         )}`;
 

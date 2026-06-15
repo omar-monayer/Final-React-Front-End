@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import JobTitleTable from "../components/JobTitlesTable";
+import API_URL from "../../config/api";
 
 function JobTitlesDashboard() {
   const [jobTitles, setJobTitles] = useState([]);
@@ -13,7 +14,7 @@ function JobTitlesDashboard() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/job-titles");
+      const response = await fetch(`${API_URL}/api/job-titles`);
 
       if (!response.ok) {
         throw new Error("Failed to load job titles");
@@ -33,7 +34,7 @@ function JobTitlesDashboard() {
   }, []);
 
   async function handleUpdateJobTitle(id, updatedData) {
-    const response = await fetch(`http://localhost:3000/api/job-titles/${id}`, {
+    const response = await fetch(`${API_URL}/api/job-titles/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ function JobTitlesDashboard() {
       return;
     }
 
-    const response = await fetch(`http://localhost:3000/api/job-titles/${id}`, {
+    const response = await fetch(`${API_URL}/api/job-titles/${id}`, {
       method: "DELETE",
     });
 

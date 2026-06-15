@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { loginUser } from "../auth/authService";
+import API_URL from "../config/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ function Login() {
   useEffect(() => {
   async function loadWeather() {
     try {
-      const response = await fetch("http://localhost:3000/api/weather/amman");
+      const response = await fetch(`${API_URL}/api/weather/amman`);
       const data = await response.json();
       setWeather(data);
     } catch (error) {

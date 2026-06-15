@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import CompanyUniqueFiltersTable from "../components/CompanyUniqueFiltersTable";
+import API_URL from "../../config/api";
 
 function CompanyUniqueFiltersDashboard() {
   const [companyUniqueFilters, setCompanyUniqueFilters] = useState([]);
@@ -18,7 +19,7 @@ function CompanyUniqueFiltersDashboard() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters"
+        `${API_URL}/api/company-unique-filters` 
       );
 
       if (!response.ok) {
@@ -36,7 +37,7 @@ function CompanyUniqueFiltersDashboard() {
 
   async function loadFormOptions() {
     const response = await fetch(
-      "http://localhost:3000/api/company-unique-filters/form-options"
+      `${API_URL}/api/company-unique-filters/form-options`
     );
 
     if (!response.ok) {
@@ -65,7 +66,7 @@ function CompanyUniqueFiltersDashboard() {
 
   async function handleUpdateCompanyUniqueFilter(id, updatedData) {
     const response = await fetch(
-      `http://localhost:3000/api/company-unique-filters/${id}`,
+      `${API_URL}/api/company-unique-filters/${id}`,
       {
         method: "PUT",
         headers: {
@@ -94,7 +95,7 @@ function CompanyUniqueFiltersDashboard() {
   }
 
   const response = await fetch(
-    `http://localhost:3000/api/company-unique-filters/${id}`,
+    `${API_URL}/api/company-unique-filters/${id}`,
     {
       method: "DELETE",
     }

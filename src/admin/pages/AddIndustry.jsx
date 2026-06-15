@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import API_URL from "../../config/api";
 
 function AddIndustry() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function AddIndustry() {
       setSaving(true);
       setMessage("Saving industry...");
 
-      const response = await fetch("http://localhost:3000/api/industries", {
+      const response = await fetch(`${API_URL}/api/industries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

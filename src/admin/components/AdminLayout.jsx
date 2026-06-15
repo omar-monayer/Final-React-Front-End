@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { logoutUser, getAuthHeaders } from "../../auth/authService";
 import "../styles/adminmain.css";
+import API_URL from "../../config/api";
 
 function AdminLayout({ children }) {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function AdminLayout({ children }) {
   useEffect(() => {
     async function checkAdminAccess() {
       try {
-        const response = await fetch("http://localhost:3000/api/admin/check", {
+        const response = await fetch(`${API_URL}/api/admin/check`, {
           headers: getAuthHeaders(),
         });
 

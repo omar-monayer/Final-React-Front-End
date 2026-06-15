@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import API_URL from "../../config/api";
 
 function AddCompanyUniqueFilters() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function AddCompanyUniqueFilters() {
   async function loadFormOptions() {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters/form-options"
+        `${API_URL}/api/company-unique-filters/form-options`
       );
 
       if (!response.ok) {
@@ -68,7 +69,7 @@ function AddCompanyUniqueFilters() {
       setMessage("Saving company unique filter...");
 
       const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters",
+        `${API_URL}/api/company-unique-filters`,
         {
           method: "POST",
           headers: {

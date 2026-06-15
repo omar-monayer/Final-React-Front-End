@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
-
+import API_URL from "../../config/api";
 
 
 function AddCompanyFilters() {
@@ -41,9 +41,9 @@ function AddCompanyFilters() {
     try {
       const [companiesResponse, jobTitlesResponse, filtersResponse] =
         await Promise.all([
-          fetch("http://localhost:3000/api/company-filters/companies"),
-          fetch("http://localhost:3000/api/company-filters/job-titles"),
-          fetch("http://localhost:3000/api/company-filters"),
+          fetch(`${API_URL}/api/company-filters/companies`),
+          fetch(`${API_URL}/api/company-filters/job-titles`),
+          fetch(`${API_URL}/api/company-filters`),
         ]);
 
       if (!companiesResponse.ok) {
@@ -109,7 +109,7 @@ function AddCompanyFilters() {
     setIsSaving(true);
     setMessage("Saving company filter...");
 
-    const response = await fetch("http://localhost:3000/api/company-filters", {
+    const response = await fetch(`${API_URL}/api/company-filters`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import CompanyFiltersTable from "../components/CompanyFiltersTable";
 import { getAuthHeaders } from "../../auth/authService";
+import API_URL from "../../config/api";
 
 function CompanyFiltersDashboard() {
   const [companyFilters, setCompanyFilters] = useState([]);
@@ -15,7 +16,7 @@ function CompanyFiltersDashboard() {
     setLoading(true);
     setMessage("");
 
-    const response = await fetch("http://localhost:3000/api/company-filters", {
+    const response = await fetch(`${API_URL}/api/company-filters`, {
       headers: getAuthHeaders(),
     });
 
@@ -40,7 +41,7 @@ function CompanyFiltersDashboard() {
 
   async function handleUpdateCompanyFilter(id, updatedData) {
     const response = await fetch(
-      `http://localhost:3000/api/company-filters/${id}`,
+      `${API_URL}/api/company-filters/${id}`,
       {
         method: "PUT",
         headers: {
@@ -69,7 +70,7 @@ function CompanyFiltersDashboard() {
   }
 
   const response = await fetch(
-    `http://localhost:3000/api/company-filters/${id}`,
+    `${API_URL}/api/company-filters/${id}`,
     {
       method: "DELETE",
     }

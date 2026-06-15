@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import API_URL from "../../config/api";
 
 function AddSize() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function AddSize() {
       setSaving(true);
       setMessage("Saving size...");
 
-      const response = await fetch("http://localhost:3000/api/sizes", {
+      const response = await fetch(`${API_URL}/api/sizes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

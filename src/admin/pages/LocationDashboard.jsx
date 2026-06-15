@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import LocationTable from "../components/LocationTable";
+import API_URL from "../../config/api";
 
 function LocationDashboard() {
   const [locations, setLocations] = useState([]);
@@ -13,7 +14,7 @@ function LocationDashboard() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/locations");
+      const response = await fetch(`${API_URL}/api/locations`);
 
       if (!response.ok) {
         throw new Error("Failed to load locations");
@@ -33,7 +34,7 @@ function LocationDashboard() {
   }, []);
 
   async function handleUpdateLocation(id, updatedData) {
-  const response = await fetch(`http://localhost:3000/api/locations/${id}`, {
+  const response = await fetch(`${API_URL}/api/locations/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +61,7 @@ async function handleDeleteLocation(id) {
     return;
   }
 
-  const response = await fetch(`http://localhost:3000/api/locations/${id}`, {
+  const response = await fetch(`${API_URL}/api/locations/${id}`, {
     method: "DELETE",
   });
 

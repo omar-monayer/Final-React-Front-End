@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import SizeTable from "../components/SizeTable";
+import API_URL from "../../config/api";
 
 function SizeDashboard() {
   const [sizes, setSizes] = useState([]);
@@ -13,7 +14,7 @@ function SizeDashboard() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/sizes");
+      const response = await fetch(`${API_URL}/api/sizes`);
 
       if (!response.ok) {
         throw new Error("Failed to load sizes");
@@ -33,7 +34,7 @@ function SizeDashboard() {
   }, []);
 
   async function handleUpdateSize(id, updatedData) {
-    const response = await fetch(`http://localhost:3000/api/sizes/${id}`, {
+    const response = await fetch(`${API_URL}/api/sizes/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ function SizeDashboard() {
       return;
     }
 
-    const response = await fetch(`http://localhost:3000/api/sizes/${id}`, {
+    const response = await fetch(`${API_URL}/api/sizes/${id}`, {
       method: "DELETE",
     });
 
