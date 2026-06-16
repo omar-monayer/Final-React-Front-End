@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import SizeTable from "../components/SizeTable";
+import { apiFetch } from "../../config/api";
 
 function SizeDashboard() {
   const [sizes, setSizes] = useState([]);
@@ -10,67 +11,64 @@ function SizeDashboard() {
   const [message, setMessage] = useState("");
 
   async function loadSizes() {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/sizes");
+    const response = await apiFetch("/api/sizes");
 
-      if (!response.ok) {
-        throw new Error("Failed to load sizes");
-      }
-
-      const data = await response.json();
-      setSizes(data);
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error("Failed to load sizes");
     }
+
+    const data = await response.json();
+    setSizes(data);
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     loadSizes();
   }, []);
 
   async function handleUpdateSize(id, updatedData) {
-    const response = await fetch(`http://localhost:3000/api/sizes/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+  const response = await apiFetch(`/api/sizes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(updatedData),
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update size");
-    }
-
-    setMessage("Size updated successfully.");
-    await loadSizes();
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to update size");
   }
 
-  async function handleDeleteSize(id) {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this size?"
-    );
+  setMessage("Size updated successfully.");
+  await loadSizes();
+}
 
-    if (!confirmDelete) {
-      return;
-    }
+ async function handleDeleteSize(id) {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this size?"
+  );
 
-    const response = await fetch(`http://localhost:3000/api/sizes/${id}`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to delete size");
-    }
-
-    setMessage("Size deleted successfully.");
-    await loadSizes();
+  if (!confirmDelete) {
+    return;
   }
+
+  const response = await apiFetch(`/api/sizes/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete size");
+  }
+
+  setMessage("Size deleted successfully.");
+  await loadSizes();
+}
 
   return (
     <AdminLayout>

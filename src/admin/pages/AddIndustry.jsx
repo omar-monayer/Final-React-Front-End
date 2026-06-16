@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import { apiFetch } from "../../config/api";
 
 function AddIndustry() {
   const navigate = useNavigate();
@@ -25,34 +26,31 @@ function AddIndustry() {
   }
 
   async function handleAdd(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setMessage("Saving industry...");
+  try {
+    setSaving(true);
+    setMessage("Saving industry...");
 
-      const response = await fetch("http://localhost:3000/api/industries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const response = await apiFetch("/api/industries", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add industry");
-      }
-
-      setMessage("Industry added successfully.");
-      navigate("/admin/industry");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add industry");
     }
+
+    setMessage("Industry added successfully.");
+    navigate("/admin/industry");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <AdminLayout>

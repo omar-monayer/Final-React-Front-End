@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import { apiFetch } from "../../config/api";
 
 function AddLocation() {
   const navigate = useNavigate();
@@ -25,34 +26,31 @@ function AddLocation() {
   }
 
   async function handleAdd(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setMessage("Saving location...");
+  try {
+    setSaving(true);
+    setMessage("Saving location...");
 
-      const response = await fetch("http://localhost:3000/api/locations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const response = await apiFetch("/api/locations", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add location");
-      }
-
-      setMessage("Location added successfully.");
-      navigate("/admin/location");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add location");
     }
+
+    setMessage("Location added successfully.");
+    navigate("/admin/location");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <AdminLayout>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import { apiFetch } from "../../config/api";
 
 function AddCompanyUniqueFilters() {
   const navigate = useNavigate();
@@ -27,26 +28,24 @@ function AddCompanyUniqueFilters() {
 
   useEffect(() => {
   async function loadFormOptions() {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters/form-options"
-      );
+  try {
+    const response = await apiFetch("/api/company-unique-filters/form-options");
 
-      if (!response.ok) {
-        throw new Error("Failed to load dropdown options");
-      }
-
-      const data = await response.json();
-
-      console.log("Form options:", data);
-
-      setLocations(data.locations || []);
-      setIndustries(data.industries || []);
-      setSizes(data.sizes || []);
-    } catch (error) {
-      setMessage(error.message);
+    if (!response.ok) {
+      throw new Error("Failed to load dropdown options");
     }
+
+    const data = await response.json();
+
+    console.log("Form options:", data);
+
+    setLocations(data.locations || []);
+    setIndustries(data.industries || []);
+    setSizes(data.sizes || []);
+  } catch (error) {
+    setMessage(error.message);
   }
+}
 
   loadFormOptions();
 }, []);
@@ -61,37 +60,31 @@ function AddCompanyUniqueFilters() {
   }
 
   async function handleAdd(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setMessage("Saving company unique filter...");
+  try {
+    setSaving(true);
+    setMessage("Saving company unique filter...");
 
-      const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+    const response = await apiFetch("/api/company-unique-filters", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add company unique filter");
-      }
-
-      setMessage("Company unique filter added successfully.");
-      navigate("/admin/company-unique-filters");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add company unique filter");
     }
+
+    setMessage("Company unique filter added successfully.");
+    navigate("/admin/company-unique-filters");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <AdminLayout>

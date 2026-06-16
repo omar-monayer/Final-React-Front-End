@@ -5,6 +5,7 @@ import PagePanel from "../components/PagePanel";
 import CompaniesActions from "../components/CompaniesActions";
 import CompaniesTable from "../components/CompaniesTable";
 import { getLoggedUser } from "../../auth/authService";
+import API_URL from "../../config/api";
 
 function Companies() {
   const [searchParams] = useSearchParams();
@@ -37,7 +38,7 @@ function Companies() {
           return;
         }
 
-        let url = `http://localhost:3000/api/user/companies?email=${encodeURIComponent(
+        let url = `${API_URL}/api/user/companies?email=${encodeURIComponent(
           user.email
         )}`;
 

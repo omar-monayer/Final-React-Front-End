@@ -4,6 +4,7 @@ import PagePanel from "../components/PagePanel";
 import DashboardActions from "../components/DashboardActions";
 import DashboardTable from "../components/DashboardTable";
 import { getLoggedUser } from "../../auth/authService";
+import API_URL from "../../config/api";
 
 function Dashboard() {
   const [companies, setCompanies] = useState([]);
@@ -25,7 +26,7 @@ function Dashboard() {
         }
 
         const response = await fetch(
-          `http://localhost:3000/api/user/dashboard-companies?email=${encodeURIComponent(
+          `${API_URL}/api/user/dashboard-companies?email=${encodeURIComponent(
             user.email
           )}`
         );

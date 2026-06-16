@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import LocationTable from "../components/LocationTable";
+import { apiFetch } from "../../config/api";
 
 function LocationDashboard() {
   const [locations, setLocations] = useState([]);
@@ -13,7 +14,7 @@ function LocationDashboard() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:3000/api/locations");
+      const response = await apiFetch("/api/locations");
 
       if (!response.ok) {
         throw new Error("Failed to load locations");
@@ -33,13 +34,10 @@ function LocationDashboard() {
   }, []);
 
   async function handleUpdateLocation(id, updatedData) {
-  const response = await fetch(`http://localhost:3000/api/locations/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updatedData),
-  });
+  const response = await apiFetch(`/api/locations/${id}`, {
+  method: "PUT",
+  body: JSON.stringify(updatedData),
+});
 
   const data = await response.json();
 
@@ -60,9 +58,9 @@ async function handleDeleteLocation(id) {
     return;
   }
 
-  const response = await fetch(`http://localhost:3000/api/locations/${id}`, {
-    method: "DELETE",
-  });
+  const response = await apiFetch(`/api/locations/${id}`, {
+  method: "DELETE",
+});
 
   if (!response.ok) {
     throw new Error("Failed to delete location");

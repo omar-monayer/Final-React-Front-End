@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
+import { apiFetch } from "../../config/api";
 
 function AddSize() {
   const navigate = useNavigate();
@@ -24,34 +25,31 @@ function AddSize() {
   }
 
   async function handleAdd(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setMessage("Saving size...");
+  try {
+    setSaving(true);
+    setMessage("Saving size...");
 
-      const response = await fetch("http://localhost:3000/api/sizes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const response = await apiFetch("/api/sizes", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add size");
-      }
-
-      setMessage("Size added successfully.");
-      navigate("/admin/size");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add size");
     }
+
+    setMessage("Size added successfully.");
+    navigate("/admin/size");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <AdminLayout>

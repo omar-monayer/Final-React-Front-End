@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import CompanyUniqueFiltersTable from "../components/CompanyUniqueFiltersTable";
+import { apiFetch } from "../../config/api";
 
 function CompanyUniqueFiltersDashboard() {
   const [companyUniqueFilters, setCompanyUniqueFilters] = useState([]);
@@ -14,42 +15,37 @@ function CompanyUniqueFiltersDashboard() {
   const [message, setMessage] = useState("");
 
   async function loadCompanyUniqueFilters() {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:3000/api/company-unique-filters"
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to load company unique filters");
-      }
-
-      const data = await response.json();
-      setCompanyUniqueFilters(data);
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadFormOptions() {
-    const response = await fetch(
-      "http://localhost:3000/api/company-unique-filters/form-options"
-    );
+    const response = await apiFetch("/api/company-unique-filters");
 
     if (!response.ok) {
-      throw new Error("Failed to load form options");
+      throw new Error("Failed to load company unique filters");
     }
 
     const data = await response.json();
+    setCompanyUniqueFilters(data);
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setLoading(false);
+  }
+}
 
-    setLocations(data.locations || []);
-    setIndustries(data.industries || []);
-    setSizes(data.sizes || []);
+  async function loadFormOptions() {
+  const response = await apiFetch("/api/company-unique-filters/form-options");
+
+  if (!response.ok) {
+    throw new Error("Failed to load form options");
   }
 
+  const data = await response.json();
+
+  setLocations(data.locations || []);
+  setIndustries(data.industries || []);
+  setSizes(data.sizes || []);
+}
   useEffect(() => {
     async function loadPage() {
       try {
@@ -64,26 +60,22 @@ function CompanyUniqueFiltersDashboard() {
   }, []);
 
   async function handleUpdateCompanyUniqueFilter(id, updatedData) {
-    const response = await fetch(
-      `http://localhost:3000/api/company-unique-filters/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      }
-    );
+  const response = await apiFetch(`/api/company-unique-filters/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(updatedData),
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update company unique filter");
-    }
-
-    setMessage("Company unique filter updated successfully.");
-    await loadCompanyUniqueFilters();
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to update company unique filter");
   }
+
+  setMessage("Company unique filter updated successfully.");
+  await loadCompanyUniqueFilters();
+}
+
+
   async function handleDeleteCompanyUniqueFilter(id) {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this company unique filter?"
@@ -93,19 +85,15 @@ function CompanyUniqueFiltersDashboard() {
     return;
   }
 
-  const response = await fetch(
-    `http://localhost:3000/api/company-unique-filters/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
+  const response = await apiFetch(`/api/company-unique-filters/${id}`, {
+    method: "DELETE",
+  });
 
   if (!response.ok) {
     throw new Error("Failed to delete company unique filter");
   }
 
   setMessage("Company unique filter deleted successfully.");
-
   await loadCompanyUniqueFilters();
 }
 
