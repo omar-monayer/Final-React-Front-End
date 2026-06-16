@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../components/AdminLayout";
 import "../styles/adminforms.css";
-import API_URL from "../../config/api";
+import { apiFetch } from "../../config/api";
 
 function AddJobTitle() {
   const navigate = useNavigate();
@@ -25,34 +25,31 @@ function AddJobTitle() {
   }
 
   async function handleAdd(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setMessage("Saving job title...");
+  try {
+    setSaving(true);
+    setMessage("Saving job title...");
 
-      const response = await fetch(`${API_URL}/api/job-titles`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const response = await apiFetch("/api/job-titles", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add job title");
-      }
-
-      setMessage("Job title added successfully.");
-      navigate("/admin/job-titles");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setSaving(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add job title");
     }
+
+    setMessage("Job title added successfully.");
+    navigate("/admin/job-titles");
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <AdminLayout>

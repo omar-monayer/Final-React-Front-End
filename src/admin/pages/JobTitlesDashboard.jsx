@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import AdminPanel from "../components/AdminPanel";
 import JobTitleTable from "../components/JobTitlesTable";
-import API_URL from "../../config/api";
+import { apiFetch } from "../../config/api";
 
 function JobTitlesDashboard() {
   const [jobTitles, setJobTitles] = useState([]);
@@ -11,67 +11,64 @@ function JobTitlesDashboard() {
   const [message, setMessage] = useState("");
 
   async function loadJobTitles() {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/job-titles`);
+    const response = await apiFetch("/api/job-titles");
 
-      if (!response.ok) {
-        throw new Error("Failed to load job titles");
-      }
-
-      const data = await response.json();
-      setJobTitles(data);
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error("Failed to load job titles");
     }
+
+    const data = await response.json();
+    setJobTitles(data);
+  } catch (error) {
+    setMessage(error.message);
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     loadJobTitles();
   }, []);
 
   async function handleUpdateJobTitle(id, updatedData) {
-    const response = await fetch(`${API_URL}/api/job-titles/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+  const response = await apiFetch(`/api/job-titles/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(updatedData),
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update job title");
-    }
-
-    setMessage("Job title updated successfully.");
-    await loadJobTitles();
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to update job title");
   }
+
+  setMessage("Job title updated successfully.");
+  await loadJobTitles();
+}
 
   async function handleDeleteJobTitle(id) {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this job title?"
-    );
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this job title?"
+  );
 
-    if (!confirmDelete) {
-      return;
-    }
-
-    const response = await fetch(`${API_URL}/api/job-titles/${id}`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to delete job title");
-    }
-
-    setMessage("Job title deleted successfully.");
-    await loadJobTitles();
+  if (!confirmDelete) {
+    return;
   }
+
+  const response = await apiFetch(`/api/job-titles/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete job title");
+  }
+
+  setMessage("Job title deleted successfully.");
+  await loadJobTitles();
+}
 
   return (
     <AdminLayout>
